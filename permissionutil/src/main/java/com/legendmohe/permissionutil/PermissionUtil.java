@@ -37,7 +37,7 @@ public class PermissionUtil {
             throw new IllegalArgumentException("context must be Activity or Fragment");
         }
 
-        PermissionItem item = findPermissionItemOf(context);
+        PermissionItem<T> item = findPermissionItemOf(context);
         if (item != null) {
             return item;
         } else {
@@ -45,14 +45,14 @@ public class PermissionUtil {
         }
     }
 
-    private static <T> PermissionItem pushRequest(T context) {
+    private static <T> PermissionItem<T> pushRequest(T context) {
         PermissionItem<T> newItem = new PermissionItem<>();
         newItem.mPermissionContext = new WeakReference<>(context);
         sPendingRequest.add(newItem);
         return newItem;
     }
 
-    private static PermissionItem findPermissionItemOf(Object context) {
+    private static <T> PermissionItem<T> findPermissionItemOf(T context) {
         for (PermissionItem item :
                 sPendingRequest) {
             if (item.mPermissionContext.get() != null && item.mPermissionContext.get() == context) {
