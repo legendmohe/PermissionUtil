@@ -1,0 +1,80 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+
+def getBaseVersion() {
+    def versionPropsFile = file('version.properties')
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+        versionProps.load(new FileInputStream(versionPropsFile))
+        return versionProps['VERSION_CODE']
+    } else {
+        throw new GradleException("Could not read version.properties!")
+    }
+}
+
+def getVCSVersion() {
+    def projectVersion = 'git rev-list --count HEAD'.execute().text.trim()
+    return projectVersion
+}
+
+ext {
+    baseVersion = getBaseVersion()
+    version = ext.baseVersion + "." + getVCSVersion()
+
+    println("version:" + version)
+
+    bintrayRepo = 'maven'
+    bintrayName = 'PermissionUtil'
+
+    publishedGroupId = 'com.legendmohe.maven'
+    libraryName = 'permissionutil'
+    artifact = 'permissionutil'
+
+    siteUrl = 'https://github.com/legendmohe/PermissionUtil'
+    gitUrl = 'https://github.com/legendmohe/PermissionUtil.git'
+
+    libraryDescription = 'For faster android development'
+    libraryVersion = version
+
+    developerId = 'legendmohe'
+    developerName = 'Xinyu he'
+    developerEmail = 'legendmohe@foxmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        minSdkVersion 17
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.1.0'
+    testCompile 'junit:junit:4.12'
+}
+
+apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/bintrayv1.gradle'
